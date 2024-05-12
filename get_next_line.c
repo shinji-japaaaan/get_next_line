@@ -6,6 +6,7 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 15:48:53 by sishizaw          #+#    #+#             */
+/*   Updated: 2024/05/12 17:55:34 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -13,18 +14,19 @@
 
 static int	find_newline(int fd, char **line, char **st_arr, char *buf)
 {
-	char	len;
+	char	*temp;
 	int		bytes_read;
 
 	bytes_read = read(fd, buf, BUFFER_SIZE);
 	if (bytes_read <= 0)
 		return (bytes_read);
 	buf[bytes_read] = '\0';
-	len = ft_strchr_len(buf, '\n', byted_read);
-	if (len)
+	temp = ft_strchr_len(buf, '\n', bytes_read);
+	if (temp)
 	{
-		*line = ft_strnjoin(*line, buf, len);
-		*st_arr = ft_strdup(buf[len] + 0);
+		*temp = '\0';
+		*line = ft_strnjoin(*line, buf, temp - buf);
+		*st_arr = ft_strdup(temp + 1);
 		free(buf);
 		return (1);
 	}
@@ -40,8 +42,12 @@ static int	read_fd(int fd, char **line, char **st_arr)
 	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf)
 		return (-1);
-	ret = find_newline(fd, line, st_arr, buf);
-	free(buf);
+	while (1)
+	{
+		ret = find_newline(fd, line, st_arr, buf);
+		if (ret != 0)
+			break;
+	}
 	return (ret);
 }
 
@@ -53,19 +59,20 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = ft_stedup("");
+	line = ft_strdup("");
 	if(!line)
-		rteturn (NULL);
-	if (st_arr[fd]
+		return (NULL);
+	if (st_arr[fd])
 	{
-		line =ft_strdup(st_arr[fd];
+		line =ft_strdup(st_arr[fd]);
 		free(st_arr[fd]);
-		st_arr[fd]) = NULL;
+		st_arr[fd] = NULL;
 	}
 	ret = read_fd(fd, &line, &st_arr[fd]);
 	if (ret <= 0 && !ft_strlen(line))
 	{
-	free(line)
+	free(line);
 	line = NULL;
 	}
 	return (line);
+}
