@@ -6,7 +6,7 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/09 15:48:53 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/12 17:55:34 by sishizaw         ###   ########.fr       */
+/*   Updated: 2024/05/13 17:53:43 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ static int	find_newline(int fd, char **line, char **st_arr, char *buf)
 	char	*temp;
 	int		bytes_read;
 
+	while (1)
+	{
 	bytes_read = read(fd, buf, BUFFER_SIZE);
 	if (bytes_read <= 0)
 		return (bytes_read);
@@ -31,6 +33,8 @@ static int	find_newline(int fd, char **line, char **st_arr, char *buf)
 		return (1);
 	}
 	*line = ft_strnjoin(*line, buf, bytes_read);
+	}
+	free(buf);
 	return (0);
 }
 
@@ -42,12 +46,7 @@ static int	read_fd(int fd, char **line, char **st_arr)
 	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buf)
 		return (-1);
-	while (1)
-	{
-		ret = find_newline(fd, line, st_arr, buf);
-		if (ret != 0)
-			break;
-	}
+	ret = find_newline(fd, line, st_arr, buf);
 	return (ret);
 }
 
