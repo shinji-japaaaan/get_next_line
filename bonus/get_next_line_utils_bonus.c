@@ -6,11 +6,9 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/13 17:53:16 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/13 17:53:24 by sishizaw         ###   ########.fr       */
+/*   Updated: 2024/05/14 11:33:08 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// get_next_line_utils_bonus.c
 
 #include "get_next_line_bonus.h"
 

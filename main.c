@@ -1,6 +1,10 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include "get_next_line.h" 
+#include "get_next_line.h"
+
+
+// __attribute__((destructor))
+// static void destructor() {
+//     system("leaks -q a.out");
+// }
 
 int	main()
 {
@@ -26,4 +30,3 @@ int	main()
 	}
 	return (0);
 }
-

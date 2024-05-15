@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/09 15:48:53 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/15 17:07:14 by sishizaw         ###   ########.fr       */
+/*   Created: 2024/05/13 17:37:50 by sishizaw          #+#    #+#             */
+/*   Updated: 2024/05/14 12:23:48 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-static char	find_newline(int fd, char **line, char **st_arr, char *buf)
+static int	find_newline(int fd, char **line, char **st_arr, char *buf)
 {
 	char	*temp;
 	int		bytes_read;
@@ -21,28 +21,24 @@ static char	find_newline(int fd, char **line, char **st_arr, char *buf)
 	{
 		bytes_read = read(fd, buf, BUFFER_SIZE);
 		if (bytes_read <= 0)
-		{
-			free(buf);
 			return (bytes_read);
-		}
 		buf[bytes_read] = '\0';
-		temp = ft_strchr_len(buf, '\n');
+		temp = ft_strchr_len(buf, '\n', bytes_read);
 		if (temp)
 		{
+			*temp = '\0';
 			*line = ft_strnjoin(*line, buf, temp - buf);
 			*st_arr = ft_strdup(temp + 1);
 			free(buf);
-			buf = NULL;
 			return (1);
 		}
 		*line = ft_strnjoin(*line, buf, bytes_read);
 	}
 	free(buf);
-	buf = NULL;
 	return (0);
 }
 
-static char	read_fd(int fd, char **line, char **st_arr)
+static int	read_fd(int fd, char **line, char **st_arr)
 {
 	char	*buf;
 	int		ret;
@@ -63,16 +59,13 @@ char	*get_next_line(int fd)
 	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = ft_strdup("");
+	if (!line)
+		return (NULL);
 	if (st_arr[fd])
 	{
-		free(line);
 		line = ft_strdup(st_arr[fd]);
 		free(st_arr[fd]);
 		st_arr[fd] = NULL;
-		if (!line)
-		{
-			return (NULL);
-		}
 	}
 	ret = read_fd(fd, &line, &st_arr[fd]);
 	if (ret <= 0 && !ft_strlen(line))
@@ -82,4 +75,3 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
-
