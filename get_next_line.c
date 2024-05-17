@@ -16,29 +16,33 @@ static char	find_newline(int fd, char **line, char **st_arr, char *buf)
 {
 	char	*temp;
 	int		bytes_read;
+	int		len;
 
-	while (1)
+	while ((bytes_read = read(fd, buf, BUFFER_SIZE)) > 0)
 	{
-		bytes_read = read(fd, buf, BUFFER_SIZE);
-		if (bytes_read <= 0)
-		{
-			free(buf);
-			return (bytes_read);
-		}
 		buf[bytes_read] = '\0';
 		temp = ft_strchr_len(buf, '\n');
 		if (temp)
 		{
-			*line = ft_strnjoin(*line, buf, temp - buf);
+			len = temp - buf + 1;
+			*line = ft_strnjoin(*line, buf, len);
+			if (!line)
+				return (-1);
 			*st_arr = ft_strdup(temp + 1);
-			free(buf);
-			buf = NULL;
-			return (1);
+			if (!st_arr)
+				return (free(st_arr), -1);
+			break;
 		}
-		*line = ft_strnjoin(*line, buf, bytes_read);
+		else
+		{
+			len = ft_strlen(buf);
+			*line = ft_strnjoin(*line, buf, len);
+		}
 	}
 	free(buf);
 	buf = NULL;
+	if (bytes_read < 0)
+		return (-1);
 	return (0);
 }
 
@@ -63,23 +67,21 @@ char	*get_next_line(int fd)
 	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
 	line = ft_strdup("");
+	if (line == NULL)
+		return (NULL);
 	if (st_arr[fd])
 	{
 		free(line);
 		line = ft_strdup(st_arr[fd]);
+		printf("line: %s\n", line);
+		if (line == NULL)
+			return (NULL);
 		free(st_arr[fd]);
 		st_arr[fd] = NULL;
-		if (!line)
-		{
-			return (NULL);
-		}
 	}
 	ret = read_fd(fd, &line, &st_arr[fd]);
-	if (ret <= 0 && !ft_strlen(line))
-	{
-		free(line);
-		line = NULL;
-	}
+	if (ret < 0)
+		return (NULL);
 	return (line);
 }
 

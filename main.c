@@ -19,7 +19,7 @@ int	main()
 	}
 	while ((line = get_next_line(fd)) != NULL)
 	{
-		printf("%s\n", line);
+		printf("%s", line);
 		free(line);
 		line = NULL;
 	}

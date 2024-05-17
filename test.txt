@@ -1,2 +1,2 @@
-zzzzzzzzzzzzzzzzzzzzz
-0
+12345678901
+12345
