@@ -1,32 +1,33 @@
 #include "get_next_line.h"
 
-
 // __attribute__((destructor))
 // static void destructor() {
 //     system("leaks -q a.out");
 // }
 
-int	main()
+int	main(void)
 {
 	int	fd;
-	char	*line;
+	char	*str;
+	// char	*str2;
 
 	fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
+	for (int i = 0; i < 5; i++)
 	{
-		perror("faild to open file");
-		return (1);
+	str = get_next_line(fd);
+	// str2 = get_next_line(fd);
+	printf("%s", str);	
+	free(str);
 	}
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-		line = NULL;
-	}
-	if (close(fd) == -1)
-	{
-		perror("failed to close file");
-		return (1);
-	}
-	return (0);
+	close(fd);
+	// printf("%s", str2);
+
+	// fd = 0;
+	// str = get_next_line(fd);
+	// close(fd);
+	// printf("%s", str);
+	// free(str);
+
+	// free(str);
+	// free(str2);
 }

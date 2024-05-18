@@ -6,7 +6,7 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/12 11:25:13 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/15 16:56:28 by sishizaw         ###   ########.fr       */
+/*   Updated: 2024/05/18 15:34:16 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*ft_strnjoin(char const *s1, char const *s2, int n)
 		s1_len = ft_strlen(s1);
 	if (s2 != NULL)
 		s2_len = ft_strlen(s2);
-	result = (char *)malloc(s1_len + n + 2);
+	result = (char *)malloc(s1_len + n + 1);
 	if (result == NULL)
 		return (NULL);
 	cpy(cpy(result, (char *)s1, s1_len), (char *)s2, n);
@@ -83,9 +83,7 @@ char	*ft_strdup(const char *src)
 	char	*dest;
 	char	*ptr;
 
-	len = 0;
-	while (src[len] != '\0')
-		len++;
+	len = ft_strlen(src);
 	dest = (char *)malloc(len + 1);
 	if (dest == NULL)
 		return (NULL);

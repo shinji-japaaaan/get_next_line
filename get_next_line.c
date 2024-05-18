@@ -5,12 +5,21 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/09 15:48:53 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/15 17:07:14 by sishizaw         ###   ########.fr       */
+/*   Created: 2024/05/18 12:12:24 by sishizaw          #+#    #+#             */
+/*   Updated: 2024/05/18 17:28:35 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+static void safe_free(char **ptr)
+{
+	if (ptr != NULL && *ptr != NULL)
+	{
+		free(*ptr);
+		*ptr = NULL;
+	}
+}
 
 static char	find_newline(int fd, char **line, char **st_arr, char *buf)
 {
@@ -27,17 +36,19 @@ static char	find_newline(int fd, char **line, char **st_arr, char *buf)
 			len = temp - buf + 1;
 			*line = ft_strnjoin(*line, buf, len);
 			if (!line)
-				return (-1);
+				return (free(buf), -1);
 			*st_arr = ft_strdup(temp + 1);
 			if (!st_arr)
-				return (free(st_arr), -1);
-			break;
+				return (free(buf), -1);
 		}
 		else
 		{
 			len = ft_strlen(buf);
 			*line = ft_strnjoin(*line, buf, len);
+			if (!line)
+				return (free(buf), -1);
 		}
+		break;
 	}
 	free(buf);
 	buf = NULL;
@@ -46,7 +57,7 @@ static char	find_newline(int fd, char **line, char **st_arr, char *buf)
 	return (0);
 }
 
-static char	read_fd(int fd, char **line, char **st_arr)
+static int	read_fd(int fd, char **line, char **st_arr)
 {
 	char	*buf;
 	int		ret;
@@ -73,15 +84,43 @@ char	*get_next_line(int fd)
 	{
 		free(line);
 		line = ft_strdup(st_arr[fd]);
-		printf("line: %s\n", line);
 		if (line == NULL)
 			return (NULL);
 		free(st_arr[fd]);
 		st_arr[fd] = NULL;
 	}
 	ret = read_fd(fd, &line, &st_arr[fd]);
-	if (ret < 0)
+	printf("戻り値：%d\n", ret);
+	if (ret < 0 || (ret == 0 && line[0] == '\0'))
+	{
+		safe_free(&st_arr[fd]);
+		safe_free(&line);
 		return (NULL);
+	}
 	return (line);
 }
 
+int	main()
+{
+	int	fd;
+	char	*line;
+
+	fd = open("test.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		perror("faild to open file");
+		return (1);
+	}
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+		line = NULL;
+	}
+	if (close(fd) == -1)
+	{
+		perror("failed to close file");
+		return (1);
+	}
+	return (0);
+}
