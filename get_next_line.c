@@ -6,11 +6,12 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:12:24 by sishizaw          #+#    #+#             */
-/*   Updated: 2025/01/04 21:54:24 by sishizaw         ###   ########.fr       */
+/*   Updated: 2024/05/19 12:06:40 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+// #include "get_next_line_utils.c"
 
 static void	safe_free(char **ptr)
 {
@@ -35,7 +36,7 @@ static char	*find_newline(char **st_arr)
 	line = malloc(sizeof(char) * (len + 1));
 	if (!line)
 		return (NULL);
-	ft_memmove(line, *st_arr, len);
+	line = ft_memmove(line, *st_arr, len);
 	line[len] = '\0';
 	if (temp)
 		ft_memmove(*st_arr, temp +1, ft_strlen(temp + 1) + 1);
@@ -44,35 +45,34 @@ static char	*find_newline(char **st_arr)
 	return (line);
 }
 
-static int read_fd(int fd, char **st_arr)
+static int	read_fd(int fd, char **st_arr)
 {
-    char    *buf;
-    int     count_bytes;
-    char    *st_arr_temp;
+	char	*buf;
+	int		count_bytes;
+	char	*st_arr_temp;
 
-    buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-    if (!buf)
-        return (-1);
-    while (1)
-    {
-        count_bytes = read(fd, buf, BUFFER_SIZE);
-        if (count_bytes < 0)
-            return (free(buf), -1);
-        if (count_bytes == 0)
-            break;
-        buf[count_bytes] = '\0';
-        st_arr_temp = *st_arr;
-        *st_arr = ft_strnjoin(*st_arr, buf, count_bytes);
-        if (*st_arr == NULL)
-            return (safe_free(&st_arr_temp), free(buf), -1);
-        free(st_arr_temp);
-        if (ft_strchr_len(*st_arr, '\n'))
-            break;
-    }
-    free(buf);
-    return (0);
+	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buf)
+		return (-1);
+	while (1)
+	{
+		count_bytes = read(fd, buf, BUFFER_SIZE);
+		if (count_bytes < 0)
+			return (free(buf), -1);
+		if (count_bytes == 0)
+			break ;
+		buf[count_bytes] = '\0';
+		st_arr_temp = *st_arr;
+		*st_arr = ft_strnjoin(*st_arr, buf, count_bytes);
+		if (*st_arr == NULL)
+			return (free(&st_arr), free(buf), -1);
+		free(st_arr_temp);
+		if (ft_strchr_len(*st_arr, '\n'))
+			break ;
+	}
+	free(buf);
+	return (0);
 }
-
 
 char	*get_next_line(int fd)
 {
@@ -101,27 +101,27 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-int	main()
-{
-	int	fd;
-	char	*line;
+// int	main()
+// {
+// 	int	fd;
+// 	char	*line;
 
-	fd = open("test.txt", O_RDONLY);
-	if (fd == -1)
-	{
-		perror("faild to open file");
-		return (1);
-	}
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-		line = NULL;
-	}
-	if (close(fd) == -1)
-	{
-		perror("failed to close file");
-		return (1);
-	}
-	return (0);
-}
+// 	fd = open("test.txt", O_RDONLY);
+// 	if (fd == -1)
+// 	{
+// 		perror("faild to open file");
+// 		return (1);
+// 	}
+// 	while ((line = get_next_line(fd)) != NULL)
+// 	{
+// 		printf("%s", line);
+// 		free(line);
+// 		line = NULL;
+// 	}
+// 	if (close(fd) == -1)
+// 	{
+// 		perror("failed to close file");
+// 		return (1);
+// 	}
+// 	return (0);
+// }
