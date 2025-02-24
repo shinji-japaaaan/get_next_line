@@ -6,7 +6,7 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 12:12:24 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/19 12:06:40 by sishizaw         ###   ########.fr       */
+/*   Updated: 2025/02/24 21:56:50 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,53 +24,62 @@ static void	safe_free(char **ptr)
 
 static char	*find_newline(char **st_arr)
 {
-	char	*temp;
-	int		len;
+	char	*newline_pos;
 	char	*line;
+	int		len;
 
-	temp = ft_strchr_len(*st_arr, '\n');
-	if (temp)
-		len = temp - *st_arr + 1;
+	newline_pos = ft_strchr_len(*st_arr, '\n');
+	if (newline_pos)
+		len = newline_pos - *st_arr + 1;
 	else
 		len = ft_strlen(*st_arr);
 	line = malloc(sizeof(char) * (len + 1));
 	if (!line)
 		return (NULL);
-	line = ft_memmove(line, *st_arr, len);
+	ft_strncpy(line, *st_arr, len);
 	line[len] = '\0';
-	if (temp)
-		ft_memmove(*st_arr, temp +1, ft_strlen(temp + 1) + 1);
+	if (newline_pos)
+		ft_strcpy(*st_arr, newline_pos + 1);
 	else
-		safe_free(&*st_arr);
+		safe_free(st_arr);
 	return (line);
+}
+
+static int	append_buffer(char **st_arr, char *buf, int count_bytes)
+{
+	char	*tmp;
+
+	buf[count_bytes] = '\0';
+	tmp = *st_arr;
+	*st_arr = ft_strnjoin(*st_arr, buf, count_bytes);
+	if (!*st_arr)
+	{
+		free(tmp);
+		return (-1);
+	}
+	free(tmp);
+	return (0);
 }
 
 static int	read_fd(int fd, char **st_arr)
 {
 	char	*buf;
 	int		count_bytes;
-	char	*st_arr_temp;
 
-	buf = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	buf = malloc(BUFFER_SIZE + 1);
 	if (!buf)
 		return (-1);
 	while (1)
 	{
 		count_bytes = read(fd, buf, BUFFER_SIZE);
-		if (count_bytes < 0)
-			return (free(buf), -1);
-		if (count_bytes == 0)
+		if (count_bytes <= 0 || append_buffer(st_arr, buf, count_bytes) < 0)
 			break ;
-		buf[count_bytes] = '\0';
-		st_arr_temp = *st_arr;
-		*st_arr = ft_strnjoin(*st_arr, buf, count_bytes);
-		if (*st_arr == NULL)
-			return (free(&st_arr), free(buf), -1);
-		free(st_arr_temp);
 		if (ft_strchr_len(*st_arr, '\n'))
 			break ;
 	}
 	free(buf);
+	if (count_bytes < 0)
+		return (-1);
 	return (0);
 }
 
@@ -82,24 +91,20 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (st_arr[fd] == NULL)
-		st_arr[fd] = ft_strdup("");
-	if (st_arr[fd] == NULL)
+	if (st_arr[fd] == NULL && (st_arr[fd] = ft_strdup("")) == NULL)
 		return (NULL);
 	ret = read_fd(fd, &st_arr[fd]);
-	if (ret < 0 || *st_arr[fd] == '\0')
+	if (ret < 0 || (ret == 0 && *st_arr[fd] == '\0'))
 	{
 		safe_free(&st_arr[fd]);
 		return (NULL);
 	}
 	line = find_newline(&st_arr[fd]);
 	if (line == NULL)
-	{
 		safe_free(&st_arr[fd]);
-		return (NULL);
-	}
 	return (line);
 }
+
 
 // int	main()
 // {

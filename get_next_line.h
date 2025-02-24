@@ -6,7 +6,7 @@
 /*   By: sishizaw <sishizaw@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 12:22:39 by sishizaw          #+#    #+#             */
-/*   Updated: 2024/05/19 10:14:15 by sishizaw         ###   ########.fr       */
+/*   Updated: 2025/02/24 18:27:48 by sishizaw         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ char		*ft_strnjoin(char const *s1, char const *s2, int n);
 char		*ft_strchr_len(const char *str, int c);
 size_t		ft_strlen(const char *str);
 char		*ft_strdup(const char *src);
-void		*ft_memmove(void *dest, const void *src, size_t n);
+char	    *ft_strcpy(char *dest, const char *src);
+char	    *ft_strncpy(char *dest, const char *src, int n);
 
 #endif
